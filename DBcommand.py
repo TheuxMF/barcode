@@ -10,9 +10,9 @@ class DataBase:
     def create_table(self):
         sql = '''CREATE TABLE IF NOT EXISTS posto_de_molas(
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    systemCod TEXT NOT NULL,
+                    systemCod TEXT NOT NULL UNIQUE,
                     name TEXT NOT NULL,
-                    barcod TEXT NOT NULL
+                    barcod TEXT NOT NULL UNIQUE
                 )'''
         self.cursor.execute(sql)
         self.conn.commit()
@@ -28,14 +28,34 @@ class DataBase:
         self.conn.commit()
 
     #selecionando todos os dados que tenham o system code desejado
-    def selectSystemcodALL(self,systemCod):
-        sql = '''SELECT * FROM posto_de_molas where systemCod == ?'''
-        self.cursor.execute(sql, systemCod)
 
-    #selecionando todos os codigos de barras
-    def selectBarcodALL(self, barcod):
+    #retorna um nome de produto pelo codigo do sistema passado
+    def selectName(self,systemCod):
+        sql = '''SELECT name FROM posto_de_molas where systemCod=?'''
+        self.cursor.execute(sql, (systemCod,))
+
+        return self.cursor.fetchall()
+    
+    #retorna um barcode pelo codigo de sistema informado
+    def selectBarcod(self,systemCod):      
+        sql = '''SELECT barcod FROM posto_de_molas where systemCod=?'''
+        self.cursor.execute(sql, (systemCod,))
+
+        return self.cursor.fetchall()
+
+    #retorna todos os systemCod do banco
+    def selectSystemCodALL(self):
+        sql = '''SELECT systemCod FROM posto_de_molas '''
+        self.cursor.execute(sql)
+
+        return self.cursor.fetchall()
+
+    #retorna todos os codigos de barras no banco
+    def selectBarcodALL(self):
         sql = '''SELECT barcod FROM posto_de_molas'''
         self.cursor.execute(sql)
 
+        return self.cursor.fetchall()
+        
     def close(self):
         self.conn.close()
